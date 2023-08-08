@@ -8,17 +8,26 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 
+import org.jboss.logging.Logger;
+
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ApiKeyResource {
+    private static final Logger logger = Logger.getLogger(ApiKeyResource.class);
     private static final String AUTH_METHOD = "X-API-KEY";
     private static final String HDR_USER_ID = "X-User-Id";
     private static final String INVALID_API_KEY = "INVALID_API_KEY";
@@ -29,10 +38,12 @@ public class ApiKeyResource {
     private final String realmName;
     private final String clientId;
     private final String allAccessGroupName;
+    private RealmModel actualRealm;
 
     public ApiKeyResource(KeycloakSession session) {
         this.session = session;
         String envRealmName = System.getenv("X_API_CHECK_REALM");
+        this.actualRealm = this.session.getContext().getRealm();
         this.realmName = Objects.isNull(envRealmName) || Objects.equals(System.getenv(envRealmName), "") ? "example" : envRealmName;
         this.clientId = System.getenv("X_API_CHECK_CLIENT_ID");
         this.allAccessGroupName = System.getenv("X_API_ALL_ACCESS_GROUP");
@@ -40,9 +51,33 @@ public class ApiKeyResource {
 
     @GET
     @Produces("application/json")
-    public Response checkApiKey(@QueryParam("apiKey") String apiKey, @QueryParam("memberOf") String groupName) {
+    public Response checkApiKey(@Context UriInfo uriInfo, @QueryParam("apiKey") String apiKey, @QueryParam("memberOf") String groupName) {
         Response.Status status = Response.Status.UNAUTHORIZED;
-        RealmModel realm = session.realms().getRealm(realmName);
+        RealmModel realm;
+        if (this.actualRealm != null) {
+            realm = this.actualRealm;
+            logger.info("The actual realm is from the session");
+        } else {
+            String forRealzRealmName;
+            List<PathSegment> segments = uriInfo.getPathSegments();
+            int wow = -1;
+            for (int i=0; i<segments.size();i++) {
+                if (segments.get(i).getPath() == "realms") {
+                    wow = i+1;
+                }
+            }
+            if (wow >= 0) {
+                String uriRealmName = uriInfo.getPathSegments().get(wow).getPath();
+                forRealzRealmName = uriRealmName;
+                logger.info("The actual realm is from the uri info");
+            } else {
+                forRealzRealmName = this.realmName;
+                logger.info("The actual realm is from the env var");
+            }
+            logger.info("and this is the realm name: " + forRealzRealmName);
+            realm = session.realms().getRealm(forRealzRealmName);
+        }
+        logger.info("and this is the realm name: " + realm.getName());
         UserModel user = null;
         EventBuilder event = new EventBuilder(realm, session, session.getContext().getConnection());
 
