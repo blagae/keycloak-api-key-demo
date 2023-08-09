@@ -27,6 +27,6 @@ public class ApiKeyResourceProviderFactory implements RealmResourceProviderFacto
     }
 
     public String getId() {
-        return "check";
+        return "validate-api-key";
     }
 }

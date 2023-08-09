@@ -1,7 +1,6 @@
 package com.gwidgets.resources;
 
 import com.google.common.base.Strings;
-
 import org.keycloak.events.Details;
 import org.keycloak.events.EventBuilder;
 import org.keycloak.events.EventType;
@@ -9,21 +8,50 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 
-//import org.jboss.logging.Logger;
-
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+class Payload {
+    List<String> roles;
+    List<String> groups;
+    String username;
+    String realm;
+    String email;
+    String id;
+
+    public String getId() {
+        return id;
+    }
+
+    public String getRealm() {
+        return realm;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public List<String> getGroups() {
+        return groups;
+    }
+}
+
 public class ApiKeyResource {
-    //private static final Logger logger = Logger.getLogger(ApiKeyResource.class);
     private static final String AUTH_METHOD = "X-API-KEY";
     private static final String HDR_USER_ID = "X-User-Id";
     private static final String INVALID_API_KEY = "INVALID_API_KEY";
@@ -49,7 +77,7 @@ public class ApiKeyResource {
 
     @GET
     @Produces("application/json")
-    public Response checkApiKey(@QueryParam("apiKey") String apiKey, @QueryParam("memberOf") String groupName) {
+    public Response checkApiKey(@HeaderParam("x-api-key") String apiKey, @QueryParam("memberOf") String groupName) {
         Response.Status status = Response.Status.UNAUTHORIZED;
         UserModel user = null;
         EventBuilder event = new EventBuilder(realm, session, session.getContext().getConnection());
@@ -91,18 +119,15 @@ public class ApiKeyResource {
 
         Response.ResponseBuilder builder = Response.status(status).type(MediaType.APPLICATION_JSON);
         if (null != user) {
-            var roles = user.getRealmRoleMappingsStream().map(role -> role.getName()).collect(Collectors.toList());
-            builder.entity(roles);
-            builder = builder.header(HDR_USER_ID, user.getId());
-            Map<String, List<String>> attribs = user.getAttributes();
-            for (String key : attribs.keySet()) {
-                if (key.toLowerCase().startsWith("x-")) {
-                    List<String> values = attribs.get(key);
-                    if (null != values && !values.isEmpty()) {
-                        builder = builder.header(key, values.get(0));
-                    }
-                }
-            }
+            Payload payload = new Payload();
+            List<String> roles = user.getRealmRoleMappingsStream().map(role -> role.getName()).collect(Collectors.toList());
+            payload.roles = roles;
+            payload.realm = realm.getName();
+            payload.email = user.getEmail();
+            payload.username = user.getUsername();
+            payload.id = user.getId();
+            payload.groups = user.getGroupsStream().map(group -> group.getName()).collect(Collectors.toList());
+            builder.entity(payload);
         }
         return builder.build();
     }
