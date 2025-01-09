@@ -6,11 +6,11 @@
 
     <artifactId>api-key-module</artifactId>
     <groupId>com.gwidgets</groupId>
-    <version>0.4</version>
+    <version>0.5-kc26</version>
 
     <properties>
         <java.version>11</java.version>
-        <keycloak.version>21.0.1</keycloak.version>
+        <keycloak.version>26.0.1</keycloak.version>
     </properties>
 
     <dependencies>

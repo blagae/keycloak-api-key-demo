@@ -3,7 +3,7 @@ package com.gwidgets.providers;
 
 import java.util.Objects;
 import java.util.UUID;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import org.keycloak.common.util.SecretGenerator;
 import org.keycloak.connections.jpa.JpaConnectionProvider;
 import org.keycloak.events.Event;

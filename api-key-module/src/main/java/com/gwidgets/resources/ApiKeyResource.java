@@ -1,22 +1,24 @@
 package com.gwidgets.resources;
 
+import jakarta.ws.rs.ext.Provider;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import com.google.common.base.Strings;
+
 import org.keycloak.events.Details;
 import org.keycloak.events.EventBuilder;
 import org.keycloak.events.EventType;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 class Payload {
     List<String> roles;
@@ -51,9 +53,9 @@ class Payload {
     }
 }
 
+@Provider
 public class ApiKeyResource {
     private static final String AUTH_METHOD = "X-API-KEY";
-    private static final String HDR_USER_ID = "X-User-Id";
     private static final String INVALID_API_KEY = "INVALID_API_KEY";
     private static final String PERMISSION_DENIED = "PERMISSION_DENIED";
 

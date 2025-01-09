@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   auth-server:
-    image: quay.io/keycloak/keycloak:21.0.1
+    image: quay.io/keycloak/keycloak:26.0.1
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
@@ -17,12 +17,6 @@ services:
     ports:
     - "8080:8080"
     command: ["start"]
-  dashboard-service:
-    build: dashboard-service
-    environment:
-      REALM_NAME: example
-    ports:
-    - "8180:8180"
   rest-api-service:
     build: rest-api-service
     environment:

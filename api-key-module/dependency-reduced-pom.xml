@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.gwidgets</groupId>
   <artifactId>api-key-module</artifactId>
-  <version>0.4</version>
+  <version>0.5-kc26</version>
   <build>
     <plugins>
       <plugin>
@@ -44,31 +44,39 @@
     <dependency>
       <groupId>org.keycloak</groupId>
       <artifactId>keycloak-core</artifactId>
-      <version>19.0.2</version>
+      <version>26.0.1</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
           <artifactId>keycloak-common</artifactId>
           <groupId>org.keycloak</groupId>
         </exclusion>
+        <exclusion>
+          <artifactId>jackson-datatype-jdk8</artifactId>
+          <groupId>com.fasterxml.jackson.datatype</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>jackson-datatype-jsr310</artifactId>
+          <groupId>com.fasterxml.jackson.datatype</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>microprofile-openapi-api</artifactId>
+          <groupId>org.eclipse.microprofile.openapi</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.keycloak</groupId>
       <artifactId>keycloak-server-spi</artifactId>
-      <version>19.0.2</version>
+      <version>26.0.1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.keycloak</groupId>
       <artifactId>keycloak-model-jpa</artifactId>
-      <version>19.0.2</version>
+      <version>26.0.1</version>
       <scope>provided</scope>
       <exclusions>
-        <exclusion>
-          <artifactId>bcprov-jdk15on</artifactId>
-          <groupId>org.bouncycastle</groupId>
-        </exclusion>
         <exclusion>
           <artifactId>keycloak-server-spi-private</artifactId>
           <groupId>org.keycloak</groupId>
@@ -78,11 +86,11 @@
           <groupId>org.keycloak</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>keycloak-model-legacy</artifactId>
+          <artifactId>keycloak-model-storage</artifactId>
           <groupId>org.keycloak</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>keycloak-model-legacy-private</artifactId>
+          <artifactId>keycloak-model-storage-private</artifactId>
           <groupId>org.keycloak</groupId>
         </exclusion>
         <exclusion>
@@ -95,7 +103,7 @@
         </exclusion>
         <exclusion>
           <artifactId>hibernate-core</artifactId>
-          <groupId>org.hibernate</groupId>
+          <groupId>org.hibernate.orm</groupId>
         </exclusion>
         <exclusion>
           <artifactId>slf4j-api</artifactId>
@@ -112,6 +120,6 @@
   </dependencies>
   <properties>
     <java.version>11</java.version>
-    <keycloak.version>19.0.2</keycloak.version>
+    <keycloak.version>26.0.1</keycloak.version>
   </properties>
 </project>
